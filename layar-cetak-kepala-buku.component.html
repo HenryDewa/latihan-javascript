@@ -1,0 +1,142 @@
+<tabs-header *ngIf="isGabungan">
+  <tab-header [tabTitle]="tab1Title"  (tabClick)="onTabChange($event,1)" [tabId]=1 [style]="{'background-color': '#f0f0f0'}">
+    <app-header-nasabah [singlePriview]="true" [isEdit]="false" [isGabungan]="isGabungan" [switchEnabled]="false" [dataImages]="dataDIN"></app-header-nasabah>
+  </tab-header>
+  <tab-header [tabTitle]="tab2Title"  (tabClick)="onTabChange($event,2)" [tabId]=2 [style]="{'background-color': '#f0f0f0'}">
+    <app-header-nasabah2 [singlePriview]="true"  [isEdit]="false"  [isGabungan]="isGabungan" [switchEnabled]="false" [dataImages]="dataDIN2"></app-header-nasabah2>
+  </tab-header>
+</tabs-header>
+<app-header-nasabah [singlePriview]="true" [isEdit]="false" *ngIf="!isGabungan" [switchEnabled]="false" [dataImages]="dataDIN"></app-header-nasabah>
+
+<!-- body -->
+<div class="flex justify-center">
+  <div>
+    <div class="flex flex-col items-center text-blue-bca font-weight-600 font-24"
+      style="margin-top: 24px; margin-bottom: 24px;">
+      Cetak Kepala Buku
+    </div>
+    <div class="flex flex-col items-center" style="margin-bottom: 24px;" *ngIf="jenisRekening">
+      <tr>
+        <td class="font-16 font-weight-400 pb-2 pt-2">Nomor Serial Buku Tahapan Gold &nbsp;<b class="red-error">*</b></td>
+        <td class="font-16 font-weight-400 pb-2 pt-2">
+          <input qInputTextDefault type="text" [(ngModel)]="serialNo" qKeyFilter="pint" placeholder="input serial number"
+          style="height: 40px; width: 188px; margin-left: 33px;" maxlength="10">
+        </td>
+      </tr>
+    </div>
+    <div class="flex flex-col items-center">
+      <img src="./assets/img/{{dataBuku}}" style="width: 477.16px; height: 272px;" />
+    </div>
+    <div class="flex flex-col items-center">
+      <button
+        class="secondary-blue font-weight-700 font-16 outline-none focus:outline-none text-white border rounded-full"
+        type="button" style="transition: all 0.15s ease 0s; width: 120px; height: 40.11px; margin-top: 24px;"
+        (click)="showProses()"
+        [ngClass]="{
+          'secondary-blue': serialNo.length >= 10 || jenisRekening == false,
+          'disable-button cursor-not-allowed': serialNo.length < 10 && jenisRekening == true}"
+        [disabled]="serialNo.length < 10 && jenisRekening == true">
+        CETAK
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- dialog print proses -->
+<p-dialog [(visible)]="printProses" [modal]="true" [style]="{width: '400px', height: '328px'}" [baseZIndex]="10000"
+  [draggable]="false" [resizable]="true" [closable]="false">
+
+  <p-header class="flex flex-col items-center"></p-header>
+  <div class="flex flex-col items-center whitespace-no-wrap">
+    <label>
+      <div>
+        <img src='./assets/img/GIF_loading.gif' style="width: 121.33px; height: 121.33px; margin-top: 45.33px;" />
+      </div>
+    </label>
+    <label>
+      <div class="body-text font-weight-400 font-20" style="margin-bottom: 20px;">
+        Proses Cetak Kepala Buku
+      </div>
+    </label>
+  </div>
+  <p-footer class="flex justify-center">
+    <button class="bg-red font-weight-700 font-16 outline-none focus:outline-none text-white border rounded-full"
+      type="button" style="transition: all 0.15s ease 0s; width: 160px; height: 40px; margin-bottom: 20px;"
+      (click)="printProses = false">
+      BATAL
+    </button>
+  </p-footer>
+</p-dialog>
+
+<!-- pop berhasil -->
+<p-dialog [(visible)]="doneProses" [modal]="true" [style]="{width: '400px'}" [baseZIndex]="10000" [draggable]="false"
+  [resizable]="true" [closable]="false">
+
+  <p-header class="flex flex-col items-center"></p-header>
+  <div class="flex flex-col items-center whitespace-no-wrap">
+    <label>
+      <div>
+        <img src='./assets/img/Done_Circle.png'
+          style="width: 104px; height: 104px; margin-top: 54px; margin-bottom: 8px;" />
+      </div>
+    </label>
+    <label>
+      <div class="body-text font-weight-400 font-20" style="margin-bottom: 20px;">
+        Cetak kepala buku berhasil
+      </div>
+    </label>
+  </div>
+  <p-footer class="flex justify-center">
+    <button
+      class="secondary-blue font-weight-700 font-16 outline-none focus:outline-none text-white border rounded-full"
+      type="button" style="transition: all 0.15s ease 0s; width: 160px; height: 40px; margin-bottom: 20px;"
+      (click)="doneTransaction()">
+      LANJUT
+    </button>
+
+  </p-footer>
+</p-dialog>
+
+<!-- dialog transaksi selesai -->
+<p-dialog [(visible)]="displayDoneTransaction" [modal]="true" [style]="{width: '400px'}" [baseZIndex]="10000"
+  [draggable]="false" [resizable]="true" [closable]="false">
+
+  <p-header class="flex flex-col items-center"></p-header>
+  <div class="flex flex-col items-center whitespace-no-wrap">
+    <label>
+      <div class="flex justify-center">
+        <img src='./assets/img/Done_Circle.png'
+          style="width: 104px; height: 104px; margin-top: 56px;" />
+      </div>
+      <div class="flex justify-center body-text font-weight-400 font-20" style="margin-bottom: 56px; margin-top: 23px;">
+        Transaksi berhasil diproses
+      </div>
+    </label>
+    <label>
+      <div class="body-text font-weight-400 font-20" style="margin-bottom: 32px;">
+        Apakah ingin lanjut transaksi lain?
+      </div>
+    </label>
+  </div>
+  <p-footer class="flex justify-center">
+    <button
+      class="secondary-blue font-weight-700 font-16 outline-none focus:outline-none text-white border rounded-full"
+      type="button" style="transition: all 0.15s ease 0s; width: 120px; height: 40px; margin-bottom: 20px;"
+      (click)="backToDash()">
+      TIDAK
+    </button>
+    <button
+      class="secondary-blue font-weight-700 font-16 outline-none focus:outline-none text-white border rounded-full"
+      type="button"
+      style="transition: all 0.15s ease 0s; width: 120px; height: 40px; margin-bottom: 20px; margin-left: 32px;"
+      (click)="nextStep()">
+      YA
+    </button>
+
+  </p-footer>
+</p-dialog>
+
+<!-- <app-print-kepala-buku [param]="printBookParam" ></app-print-kepala-buku>
+
+<app-print-kepala-buku-gabungan [param]="printBookParam"></app-print-kepala-buku-gabungan> -->
